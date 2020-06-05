@@ -1,7 +1,7 @@
 const debug = require('debug')('raymarch');
 
 const width = process.stdout.columns;
-const height = process.stdout.rows * 2;
+const height = process.stdout.rows * 2 - 1;
 
 const CLEAR_SCREEN = "\x1b[2J";
 const CURSOR_HOME = "\x1b[1;1H";
