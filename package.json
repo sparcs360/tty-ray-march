@@ -1,0 +1,11 @@
+{
+  "name": "raymarch",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Lee Newfeld",
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "debug": "^4.1.1"
+  }
+}
