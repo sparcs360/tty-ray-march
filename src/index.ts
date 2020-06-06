@@ -1,9 +1,6 @@
 const debug = require('debug')('raymarch');
 import { vec2, vec3 } from './gl';
 
-const width = process.stdout.columns;
-const height = process.stdout.rows * 2 - 1;
-
 const CLEAR_SCREEN = '\x1b[2J';
 const CURSOR_HOME = '\x1b[1;1H';
 const CURSOR_HIDE = '\x1b[?25l';
@@ -11,12 +8,6 @@ const CURSOR_SHOW = '\x1b[?25h';
 
 const rgb = (v: vec3) => `\x1b[38;2;${v.x};${v.y};${v.z}m`;
 const bgRgb = (v: vec3) => `\x1b[48;2;${v.x};${v.y};${v.z}m`;
-
-process.on('SIGINT', function () {
-  console.log('Caught interrupt signal');
-  process.stdout.write(CURSOR_SHOW);
-  process.exit();
-});
 
 const boundColour = c => {
   if (c < 0) {
@@ -140,7 +131,7 @@ const getLight = (p: vec3): number => {
 
 const cameraOrigin = new vec3(0, 1.25, -2);
 
-const shade = (uv: vec2): vec3 => {
+const shade = async (uv: vec2): Promise<vec3> => {
   debug('shade(uv=%o)', uv);
 
   const cameraDirection = new vec3(uv, 1.5).normalise();
@@ -153,9 +144,7 @@ const shade = (uv: vec2): vec3 => {
 
 //################################################################################
 
-process.stdout.write(CURSOR_HIDE + CLEAR_SCREEN);
-
-while (t <= 7) {
+const frameRenderer = async (width: number, height: number) => {
   let buffer = CURSOR_HOME;
   for (let y = height; y >= 0; y -= 2) {
     for (let x = 0; x < width; x++) {
@@ -164,22 +153,53 @@ while (t <= 7) {
         (y - 0.5 * height) / height,
       );
 
-      let c = shade(uv);
+      let c = await shade(uv);
       debug('c=%o', c);
       c = colour(c);
       debug('c=%o', c);
       buffer += rgb(c);
 
       uv.y = (y + 1 - 0.5 * height) / height;
-      c = colour(shade(uv));
+      c = await shade(uv);
+      debug('c=%o', c);
+      c = colour(c);
       debug('c=%o', c);
       buffer += bgRgb(c);
       buffer += '▄';
     }
   }
-  process.stdout.write(buffer);
+  return buffer;
+};
 
-  t = t + 0.25;
-}
+(async () => {
+  const w = process.stdout.columns;
+  const h = (process.stdout.rows - 2) * 2;
+  const frameDurationColour =
+    bgRgb(new vec3(0, 0, 0)) + rgb(new vec3(255, 255, 255));
 
-process.stdout.write(CURSOR_SHOW);
+  try {
+    process.stdout.write(CURSOR_HIDE + CLEAR_SCREEN);
+
+    while (true) {
+      const start = process.hrtime.bigint();
+      const frame = await frameRenderer(w, h);
+      const end = process.hrtime.bigint();
+      const frameDuration = Number.parseFloat(
+        ((end - start) / BigInt(1000000)).toString(),
+      );
+
+      process.stdout.write(frame);
+      process.stdout.write(frameDurationColour);
+      process.stdout.write(
+        `${(1000 / frameDuration).toFixed(2)} FPS (${frameDuration}ms)`,
+      );
+      process.stdout.write('  ');
+
+      t = t + frameDuration / 1000;
+    }
+  } catch (err) {
+    console.log(err);
+  } finally {
+    process.stdout.write(CURSOR_SHOW);
+  }
+})();
