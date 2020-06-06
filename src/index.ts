@@ -146,25 +146,20 @@ const shade = async (uv: vec2): Promise<vec3> => {
 
 const frameRenderer = async (width: number, height: number) => {
   let buffer = CURSOR_HOME;
+  const hw = 0.5 * width;
+  const hh = 0.5 * height;
   for (let y = height; y >= 0; y -= 2) {
+    const v1 = (y - hh) / height;
+    const v2 = (y + 1 - hh) / height;
     for (let x = 0; x < width; x++) {
-      const uv = new vec2(
-        (x - 0.5 * width) / height,
-        (y - 0.5 * height) / height,
-      );
+      const u = (x - hw) / height;
 
-      let c = await shade(uv);
-      debug('c=%o', c);
-      c = colour(c);
-      debug('c=%o', c);
-      buffer += rgb(c);
+      let c = await shade(new vec2(u, v1));
+      buffer += rgb(colour(c));
 
-      uv.y = (y + 1 - 0.5 * height) / height;
-      c = await shade(uv);
-      debug('c=%o', c);
-      c = colour(c);
-      debug('c=%o', c);
-      buffer += bgRgb(c);
+      c = await shade(new vec2(u, v2));
+      buffer += bgRgb(colour(c));
+
       buffer += '▄';
     }
   }
