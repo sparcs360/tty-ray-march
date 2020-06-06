@@ -11,8 +11,6 @@ const CURSOR_SHOW = '\x1b[?25h'
 const rgb = (...v) => `\x1b[38;2;${v[0]};${v[1]};${v[2]}m`
 const bgRgb = (...v) => `\x1b[48;2;${v[0]};${v[1]};${v[2]}m`
 
-process.stdout.write(CURSOR_HIDE + CLEAR_SCREEN)
-
 process.on('SIGINT', function () {
   console.log('Caught interrupt signal')
   process.stdout.write(CURSOR_SHOW)
@@ -188,6 +186,8 @@ const shade = (u, v) => {
 
 //################################################################################
 
+process.stdout.write(CURSOR_HIDE + CLEAR_SCREEN)
+
 while (t < 7) {
   let buffer = CURSOR_HOME
   for (let y = height; y >= 0; y -= 2) {
@@ -196,14 +196,9 @@ while (t < 7) {
       let v2 = (y - 0.5 * height) / height
       let v1 = (y + 1 - 0.5 * height) / height
 
-      // u = 0;
-      // v2 = 0;
-
       let c = colour(...shade(u, v2))
       debug('c=%o', c)
       buffer += rgb(...c)
-
-      // process.exit();
 
       c = colour(...shade(u, v1))
       debug('c=%o', c)
@@ -215,3 +210,5 @@ while (t < 7) {
 
   t = t + 0.25
 }
+
+process.stdout.write(CURSOR_SHOW)

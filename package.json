@@ -1,7 +1,7 @@
 {
   "name": "raymarch",
   "version": "1.0.0",
-  "main": "index.ts",
+  "main": "src/index.ts",
   "author": "Lee Newfeld",
   "license": "UNLICENSED",
   "private": true,
@@ -12,10 +12,10 @@
   },
   "scripts": {
     "build": "tsc",
-    "dev": "ts-node index.ts",
+    "dev": "ts-node src/index.ts",
     "start": "nodemon ./dist/index.js",
     "prod": "yarn build && yarn start",
-    "format": "prettier-standard '**/*.ts'"
+    "format": "prettier-standard 'src/**/*.ts'"
   },
   "devDependencies": {
     "nodemon": "^2.0.4",
