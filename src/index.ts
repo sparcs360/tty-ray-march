@@ -1,20 +1,28 @@
 import { vec3 } from './math';
-import { Director, Scene, HPlane, Sphere, TtyRenderer } from './gl';
+import {
+  Director,
+  Scene,
+  HPlane,
+  Sphere,
+  DiffusedLight,
+  TtyRenderer,
+} from './gl';
 
 const leftSphere = new Sphere(new vec3(-1.25, 0.5, 5), 0.5);
 const middleSphere = new Sphere(new vec3(0.25, 1, 6), 1);
 const rightSphere = new Sphere(new vec3(1.5, 0.25, 4), 0.25);
 // const torus = new Torus(new vec3(-5, 0, 20), 4, 0.5);
-const createScene = (): Scene => {
-  const s = new Scene();
-  s.addObject(new HPlane(0));
-  s.addObject(leftSphere);
-  s.addObject(middleSphere);
-  s.addObject(rightSphere);
-  // s.addObject(torus);
-  return s;
-};
-const scene = createScene();
+const leftLight = new DiffusedLight(new vec3(-20, 5, 2), 0.5);
+const backLight = new DiffusedLight(new vec3(0, 5, 20), 0.5);
+
+const scene = new Scene();
+scene.addObject(new HPlane(0));
+scene.addObject(leftSphere);
+scene.addObject(middleSphere);
+scene.addObject(rightSphere);
+// scene.addObject(torus);
+scene.addLight(leftLight);
+scene.addLight(backLight);
 
 const w = process.stdout.columns;
 const h = (process.stdout.rows - 2) * 2;
@@ -23,8 +31,8 @@ const renderer = new TtyRenderer(w, h, (scene, uv) => {
   const cameraDirection = new vec3(uv, 1.5).normalise();
   const d = scene.castRay(cameraOrigin, cameraDirection);
   const p = cameraOrigin.add(cameraDirection.mul(d));
-  const dif = scene.getLight(p);
-  return new vec3(dif, dif, dif);
+  const i = scene.getLightIntensityAt(p);
+  return new vec3(i, i, i);
 });
 
 const director = new Director(scene, renderer, (scene, t) => {

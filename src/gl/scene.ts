@@ -1,21 +1,28 @@
 const debug = require('debug')('gl:scene');
 
 import { vec3 } from '../math';
-import { SceneObject } from './objects/sceneObject';
+import { SceneObject } from './objects';
+import { Light } from './lights';
 
 export class Scene {
   static MAX_MARCHES: number = 128;
 
   time: number;
   private objects: SceneObject[];
+  private lights: Light[];
 
   constructor () {
     this.time = 0;
     this.objects = [];
+    this.lights = [];
   }
 
   addObject (obj: SceneObject) {
     this.objects.push(obj);
+  }
+
+  addLight (light: Light) {
+    this.lights.push(light);
   }
 
   castRay (origin: vec3, dir: vec3): number {
@@ -57,28 +64,12 @@ export class Scene {
     return n.normalise();
   }
 
-  getLight (p: vec3): number {
-    debug('getLight(%o)', p);
-
-    const hitNormal = this.calculateNormal(p);
-    debug('hitNormal=%o', hitNormal);
-
-    const lightPos = new vec3(0, 4, 6).add(
-      new vec3(Math.sin(this.time), 0, Math.cos(this.time) * 2),
-    );
-    debug('lightPos=%o', lightPos);
-    const lightDirection = new vec3(lightPos).sub(p).normalise();
-    debug('lightDirection=%o', lightDirection);
-
-    let diffusion = hitNormal.dot(lightDirection);
-    debug('diffusion=%d', diffusion);
-
-    const pu = new vec3(p).add(hitNormal.mul(0.02));
-    const d = this.castRay(pu, lightDirection);
-    if (d < 2.5) {
-      diffusion = diffusion * 0.2;
+  getLightIntensityAt (p: vec3): number {
+    let i: number = 0;
+    for (const light of this.lights) {
+      i = i + light.getIntensityAt(this, p);
     }
-    return diffusion;
+    return i;
   }
 
   advanceTime (ms: number) {
