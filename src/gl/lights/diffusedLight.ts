@@ -28,7 +28,7 @@ export class DiffusedLight extends Light {
     const pu = new vec3(p).add(hitNormal.mul(0.02));
     const ray = scene.castRay(pu, lightDirection);
     if (ray.isHit) {
-      angleToLight = angleToLight * 0.1;
+      angleToLight = angleToLight * 0.5;
     }
     return angleToLight * this.power;
   }

@@ -3,8 +3,8 @@ import { vec3 } from '../../math';
 
 export class Sphere extends SceneObject {
   radius: number;
-  constructor (position: vec3, radius: number) {
-    super(position);
+  constructor (position: vec3, radius: number, colour: vec3) {
+    super(position, colour);
     if (radius <= 0) {
       throw Error('radius must be > 0');
     }

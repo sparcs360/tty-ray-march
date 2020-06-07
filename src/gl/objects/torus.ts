@@ -5,8 +5,13 @@ export class Torus extends SceneObject {
   outerRadius: number;
   innerRadius: number;
 
-  constructor (centre: vec3, outerRadius: number, innerRadius: number) {
-    super(centre);
+  constructor (
+    centre: vec3,
+    outerRadius: number,
+    innerRadius: number,
+    colour: vec3,
+  ) {
+    super(centre, colour);
     if (outerRadius <= 0) {
       throw Error('outerRadius must be > 0');
     }
