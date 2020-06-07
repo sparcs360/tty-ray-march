@@ -4,11 +4,77 @@ import { vec3 } from '../math';
 import { SceneObject } from './objects';
 import { Light } from './lights';
 
-export class Scene {
-  static MAX_MARCHES: number = 128;
+class ObjectDistance {
+  object: SceneObject;
+  distance: number;
 
-  private objects: SceneObject[];
-  private lights: Light[];
+  constructor () {
+    this.object = null;
+    this.distance = Ray.MAX_DIST;
+  }
+
+  checkIfNearer (object: SceneObject, p: vec3) {
+    const distance = object.distanceFrom(p);
+    if (distance < this.distance) {
+      this.object = object;
+      this.distance = distance;
+    }
+  }
+}
+
+export class Ray {
+  static MAX_MARCHES: number = 128;
+  static MAX_DIST: number = 100;
+  static HIT_DIST: number = 0.01;
+
+  origin: vec3;
+  dir: vec3;
+  isHit: boolean;
+  hitObject?: SceneObject;
+  hitObjectAt?: vec3;
+  distance: number;
+
+  constructor (origin: vec3, dir: vec3) {
+    this.origin = origin;
+    this.dir = dir;
+    this.isHit = false;
+    this.distance = 0;
+  }
+
+  cast (scene: Scene) {
+    for (let i = 0; i < Ray.MAX_MARCHES; i++) {
+      const p = this.origin.add(this.dir.mul(this.distance));
+      debug('p=%o', p);
+      const nearestObject = this.getNearestObjectTo(scene, p);
+      debug('nearestObject=%o', nearestObject);
+      this.distance = this.distance + nearestObject.distance;
+      debug('ray.distance=%d', this.distance);
+      if (this.distance > Ray.MAX_DIST) {
+        debug('out of scene');
+        break;
+      }
+      if (nearestObject.distance < Ray.HIT_DIST) {
+        debug('hit');
+        this.isHit = true;
+        this.hitObject = nearestObject.object;
+        this.hitObjectAt = p;
+        break;
+      }
+    }
+  }
+
+  private getNearestObjectTo (scene: Scene, p: vec3): ObjectDistance {
+    const nearestObject = new ObjectDistance();
+    for (const object of scene.objects) {
+      nearestObject.checkIfNearer(object, p);
+    }
+    return nearestObject;
+  }
+}
+
+export class Scene {
+  objects: SceneObject[];
+  lights: Light[];
 
   constructor () {
     this.objects = [];
@@ -23,28 +89,11 @@ export class Scene {
     this.lights.push(light);
   }
 
-  castRay (origin: vec3, dir: vec3): number {
+  castRay (origin: vec3, dir: vec3): Ray {
     debug('castRay(origin=%o, dir=%o)', origin, dir);
-    let dist = 0;
-
-    for (let i = 0; i < Scene.MAX_MARCHES; i++) {
-      const p = origin.add(dir.mul(dist));
-      debug('p=%o', p);
-      const marchDist = this.getNearestDistanceTo(p);
-      debug('marchDist=%d', marchDist);
-      dist = dist + marchDist;
-      debug('dist=%d', dist);
-      if (dist > 100) {
-        debug('out of scene');
-        break;
-      }
-      if (marchDist < 0.01) {
-        debug('hit');
-        break;
-      }
-    }
-
-    return dist;
+    const ray = new Ray(origin, dir);
+    ray.cast(this);
+    return ray;
   }
 
   getNearestDistanceTo (p: vec3): number {

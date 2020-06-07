@@ -27,12 +27,15 @@ scene.addLight(backLight);
 const w = process.stdout.columns;
 const h = (process.stdout.rows - 2) * 2;
 const cameraOrigin = new vec3(0, 1.25, -2);
+const sky = new vec3(0.3, 0.3, 1);
 const renderer = new TtyRenderer(w, h, (scene, uv) => {
   const cameraDirection = new vec3(uv, 1.5).normalise();
-  const d = scene.castRay(cameraOrigin, cameraDirection);
-  const p = cameraOrigin.add(cameraDirection.mul(d));
-  const i = scene.getLightIntensityAt(p);
-  return new vec3(i, i, i);
+  const ray = scene.castRay(cameraOrigin, cameraDirection);
+  if (ray.isHit) {
+    const i = scene.getLightIntensityAt(ray.hitObjectAt);
+    return new vec3(i, i, i);
+  }
+  return sky;
 });
 
 const director = new Director(scene, renderer, (scene, t) => {
