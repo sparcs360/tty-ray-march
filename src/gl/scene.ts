@@ -7,12 +7,10 @@ import { Light } from './lights';
 export class Scene {
   static MAX_MARCHES: number = 128;
 
-  time: number;
   private objects: SceneObject[];
   private lights: Light[];
 
   constructor () {
-    this.time = 0;
     this.objects = [];
     this.lights = [];
   }
@@ -70,9 +68,5 @@ export class Scene {
       i = i + light.getIntensityAt(this, p);
     }
     return i;
-  }
-
-  advanceTime (ms: number) {
-    this.time = this.time + ms;
   }
 }

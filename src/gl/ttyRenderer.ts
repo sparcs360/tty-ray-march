@@ -30,7 +30,7 @@ export class TtyRenderer {
     this.shader = shader;
   }
 
-  render (scene: Scene): number {
+  render (scene: Scene, time: number): number {
     const start = process.hrtime.bigint();
 
     let buffer = TtyRenderer.CURSOR_HIDE + TtyRenderer.CURSOR_HOME;
@@ -60,7 +60,7 @@ export class TtyRenderer {
     );
 
     process.stdout.write(
-      `${TtyRenderer.FRAME_DURATION_COLOUR}elapsed=${scene.time.toFixed(
+      `${TtyRenderer.FRAME_DURATION_COLOUR}elapsed=${time.toFixed(
         2,
       )}s, frame=${frameDuration}ms, fps=${(1000 / frameDuration).toFixed(2)}${
         TtyRenderer.ERASE_EOL

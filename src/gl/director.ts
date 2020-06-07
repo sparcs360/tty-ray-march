@@ -6,6 +6,7 @@ export type SceneUpdateFunction = (scene: Scene, t: number) => void;
 const MOTIONLESS: SceneUpdateFunction = () => {};
 
 export class Director {
+  time: number;
   private scene: Scene;
   private renderer: TtyRenderer;
   private sceneUpdateFunction: SceneUpdateFunction;
@@ -15,6 +16,7 @@ export class Director {
     renderer: TtyRenderer,
     sceneUpdateFunction: SceneUpdateFunction = MOTIONLESS,
   ) {
+    this.time = 0;
     this.scene = scene;
     this.renderer = renderer;
     this.sceneUpdateFunction = sceneUpdateFunction;
@@ -28,9 +30,12 @@ export class Director {
   }
 
   private animate () {
-    // TODO: Move time into this class - need to decouple scene lighting first
-    this.sceneUpdateFunction(this.scene, this.scene.time);
-    const frameDuration = this.renderer.render(this.scene);
-    this.scene.advanceTime(frameDuration / 1000);
+    this.sceneUpdateFunction(this.scene, this.time);
+    const frameDuration = this.renderer.render(this.scene, this.time);
+    this.advanceTime(frameDuration / 1000);
+  }
+
+  advanceTime (ms: number) {
+    this.time = this.time + ms;
   }
 }

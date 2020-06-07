@@ -12,7 +12,7 @@ const leftSphere = new Sphere(new vec3(-1.25, 0.5, 5), 0.5);
 const middleSphere = new Sphere(new vec3(0.25, 1, 6), 1);
 const rightSphere = new Sphere(new vec3(1.5, 0.25, 4), 0.25);
 // const torus = new Torus(new vec3(-5, 0, 20), 4, 0.5);
-const leftLight = new DiffusedLight(new vec3(-20, 5, 2), 0.5);
+const leftLight = new DiffusedLight(new vec3(-10, 5, -2), 0.5);
 const backLight = new DiffusedLight(new vec3(0, 5, 20), 0.5);
 
 const scene = new Scene();
