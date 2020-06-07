@@ -1,5 +1,4 @@
-import { vec2 } from './vec2';
-import { vec3 } from './vec3';
+import { vec2, vec3 } from '../math';
 import { Scene } from './scene';
 
 export type ShaderFunction = (scene: Scene, uv: vec2) => vec3;

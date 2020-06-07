@@ -1,4 +1,5 @@
-import { vec3, Director, Scene, HPlane, Sphere, TtyRenderer } from './gl';
+import { vec3 } from './math';
+import { Director, Scene, HPlane, Sphere, TtyRenderer } from './gl';
 
 const leftSphere = new Sphere(new vec3(-1.25, 0.5, 5), 0.5);
 const middleSphere = new Sphere(new vec3(0.25, 1, 6), 1);

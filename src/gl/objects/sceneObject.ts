@@ -1,4 +1,4 @@
-import { vec3 } from '../vec3';
+import { vec3 } from '../../math';
 
 export abstract class SceneObject {
   position: vec3;

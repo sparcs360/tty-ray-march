@@ -1,6 +1,5 @@
 import { SceneObject } from './sceneObject';
-import { vec2 } from '../vec2';
-import { vec3 } from '../vec3';
+import { vec2, vec3 } from '../../math';
 
 export class Torus extends SceneObject {
   outerRadius: number;

@@ -1,6 +1,6 @@
 const debug = require('debug')('gl:scene');
 
-import { vec3 } from './vec3';
+import { vec3 } from '../math';
 import { SceneObject } from './objects/sceneObject';
 
 export class Scene {

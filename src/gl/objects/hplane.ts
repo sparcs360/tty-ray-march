@@ -1,5 +1,5 @@
 import { SceneObject } from './sceneObject';
-import { vec3 } from '../vec3';
+import { vec3 } from '../../math';
 
 export class HPlane extends SceneObject {
   constructor (height: number) {
