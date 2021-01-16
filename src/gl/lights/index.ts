@@ -1,4 +1,2 @@
-import { Light } from './light';
-import { DiffusedLight } from './diffusedLight';
-
-export { Light, DiffusedLight };
+export { Light } from './light';
+export { DiffusedLight } from './diffusedLight'
